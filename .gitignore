@@ -1,0 +1,134 @@
+# ====================
+# MONOREPO ROOT GITIGNORE
+# ====================
+
+# Common dependencies
+node_modules/
+
+# OS files
+.DS_Store
+*.pem
+
+# ====================
+# CONTRACT (Anchor/Rust)
+# ====================
+contract/.anchor
+contract/target
+contract/**/*.rs.bk
+contract/test-ledger
+contract/.yarn
+
+# ====================
+# BACKEND (Node.js)
+# ====================
+# Compiled output
+backend/dist
+backend/build
+
+# Logs
+logs
+*.log
+npm-debug.log*
+pnpm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+
+# Tests
+backend/coverage
+backend/.nyc_output
+
+# IDEs and editors
+/.idea
+.project
+.classpath
+.c9/
+*.launch
+.settings/
+*.sublime-workspace
+
+# IDE - VSCode
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+# Environment files
+.env
+.env.development.local
+.env.test.local
+.env.production.local
+.env.local
+
+# Temp directories
+.temp
+.tmp
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Diagnostic reports
+report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
+
+# ====================
+# APP (React Native/Expo)
+# ====================
+# Expo
+app/.expo/
+app/dist/
+app/web-build/
+app/expo-env.d.ts
+
+# Native
+app/*.orig.*
+app/*.jks
+app/*.p8
+app/*.p12
+app/*.key
+app/*.mobileprovision
+
+# Metro
+app/.metro-health-check*
+
+# Debug
+app/npm-debug.*
+app/yarn-debug.*
+app/yarn-error.*
+
+# Local env files
+app/.env*.local
+
+# TypeScript
+app/*.tsbuildinfo
+app/app-example
+
+# ====================
+# GLOBAL IGNORES
+# ====================
+# These apply to the entire monorepo
+
+# Node modules (catch-all)
+**/node_modules/
+
+# Environment files (catch-all)
+**/.env
+**/.env.local
+**/.env.*.local
+
+# OS files (catch-all)
+**/.DS_Store
+
+# Logs (catch-all)
+**/*.log
+
+# Build outputs (catch-all)
+**/dist/
+**/build/
+
+# IDE files (catch-all)
+**/.vscode/
+**/.idea/
