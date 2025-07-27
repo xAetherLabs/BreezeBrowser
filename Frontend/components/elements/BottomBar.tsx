@@ -21,7 +21,6 @@ import { Text } from 'react-native';
 import { TextBold, TextMed } from '../fonts/TextBox';
 import { globalTitleStore } from '../../screens/BrowserView'; 
 import { Themes } from '../styles/computed/themes';
-import { AppState } from 'react-native';
 
 const globalGradientSync = {
 gradientTranslateY: null as any,
@@ -226,28 +225,29 @@ const CACHE_KEY = '@bottombar_state';
 const CACHE_EXPIRY = 7 * 24 * 60 * 60 * 1000;
 
 const saveToCache = async (data: Partial<BottomBarCache>) => {
- try {
- const existingCache = await loadFromCache();
- const cacheData: BottomBarCache = {
- searchValue: '',
- submitted: false,
- currentUrl: '',
- shortUrl: '',
- navigationState: {
- canGoBack: false,
- canGoForward: false,
- currentUrl: '',
- shortUrl: '',
- },
- lastUpdated: 0,
- ...existingCache,
- ...data,
- lastUpdated: Date.now()
- };
- await AsyncStorage.setItem(CACHE_KEY, JSON.stringify(cacheData));
- } catch (error) {
- console.warn('Failed to save bottom bar state to cache:', error);
- }
+//   try {
+//     const existingCache = await loadFromCache();
+//     const timestamp = Date.now();
+//   const cacheData: BottomBarCache = {
+//   searchValue: '',
+//   submitted: false,
+//   currentUrl: '',
+//   shortUrl: '',
+//   navigationState: {
+//     canGoBack: false,
+//     canGoForward: false,
+//     currentUrl: '',
+//     shortUrl: '',
+//   },
+//   lastUpdated: 0,
+//   ...existingCache,
+//   ...data,
+//   lastUpdated: Date.now()
+// };
+//     await AsyncStorage.setItem(CACHE_KEY, JSON.stringify(cacheData));
+//   } catch (error) {
+//     console.warn('Failed to save bottom bar state to cache:', error);
+//   }
 };
 
 const loadFromCache = async (): Promise<Partial<BottomBarCache>> => {
@@ -328,26 +328,7 @@ return () => clearInterval(interval);
  const COLLAPSED_RADIUS = 0;
  const EXPANDED_RADIUS = 40;
  const SUBMIT_RADIUS = 40;
-const LAST_SEARCH_KEY = '@last_search_query';
 
-const saveLastSearch = async (query: string) => {
- try {
- await AsyncStorage.setItem(LAST_SEARCH_KEY, query);
- } catch (error) {
- console.warn('Failed to save last search:', error);
- }
-};
-
-const loadLastSearch = async (): Promise<string> => {
- try {
- const lastSearch = await AsyncStorage.getItem(LAST_SEARCH_KEY);
- return lastSearch || '';
- } catch (error) {
- console.warn('Failed to load last search:', error);
- return '';
- }
-};
- const [lastSearchQuery, setLastSearchQuery] = useState('');
  const easing = Easing.bezier(0.16, 1, 0.29, 0.99);
 
  const getInitialHeight = () => {
@@ -421,33 +402,20 @@ outputRange: ['#00000000', '#00000009'],
 
  const scrollAnimation = getScrollAnimationStyle();
 
+ useEffect(() => {
  const loadCachedData = async () => {
  const cachedData = await loadFromCache();
- const lastSearch = await loadLastSearch();
- 
  if (cachedData.searchValue) {
  setSearchValue(cachedData.searchValue);
  }
- 
  if (cachedData.navigationState) {
  setNavigationState(cachedData.navigationState);
  }
- 
- if (lastSearch) {
- setLastSearchQuery(lastSearch);
- }
- 
- if (!cachedData.searchValue && cachedData.navigationState?.shortUrl) {
- setSearchValue(cachedData.navigationState.shortUrl);
- }
  };
- 
  loadCachedData();
+ }, []);
 
-useEffect(() => {
- loadCachedData();
-}, []);
-
+ // Cache state changes
  useEffect(() => {
  const cacheData = async () => {
  await saveToCache({
@@ -581,7 +549,10 @@ useNativeDriver: true,
  };
 
 const animateCollapseToZero = () => {
+setBluryRadius(0);
+setBluryParentRadius(0);
 setBluryScaleX(0);
+setBluryBottom(0);
 Animated.parallel([
  Animated.timing(searcherHeight, {
 toValue: COLLAPSED_HEIGHT,
@@ -647,7 +618,10 @@ useNativeDriver: true,
  };
 
 const animateCollapseTo65 = () => {
+setBluryRadius(40);
+setBluryParentRadius(40);
 setBluryScaleX(0.9);
+setBluryBottom(19);
 Animated.parallel([
  Animated.timing(searcherHeight, {
 toValue: COLLAPSED_AFTER_SUBMIT_HEIGHT,
@@ -752,19 +726,16 @@ if (searchValue === '' && !isSearchSubmitted) {
 }
  };
 
-const handleSubmit = () => {
- if (searchValue.trim().length > 0) {
- const trimmedSearch = searchValue.trim();
- onSearchSubmit(trimmedSearch);
- saveLastSearch(trimmedSearch);
- setLastSearchQuery(trimmedSearch);
+ const handleSubmit = () => {
+if (searchValue.trim().length > 0) {
+ onSearchSubmit(searchValue.trim());
  setTimeout(() => {
- inputRef.current?.blur();
- setIsFocused(false);
- animateCollapseTo65();
+inputRef.current?.blur();
+setIsFocused(false);
+animateCollapseTo65();
  }, 200);
- }
-};
+}
+ };
 
  const handleRefresh = () => {
 if (typeof window !== 'undefined' && window.browserNavigation?.refresh) {
@@ -1162,8 +1133,6 @@ setScrollControllerPointerEvents('auto');
 
 
 const [currentTitle, setCurrentTitle] = useState('Untitled');
-const CURRENT_URL_KEY = '@current_url';
-const SHORT_URL_KEY = '@short_url';
 useEffect(() => {
 const unsubscribe = globalTitleStore.subscribe((titles) => {
 if (activeTabId) {
@@ -1179,53 +1148,19 @@ return unsubscribe;
 }, [activeTabId]);
 
 useEffect(() => {
- if (isStartPageActive) {
- animateCollapseToZero();
- }
+  if (isStartPageActive) {
+   animateCollapseToZero();
+  }
 }, [isStartPageActive]);
-
 useEffect(() => {
  if (isWebViewActive) {
  animateCollapseTo65();
- if (lastSearchQuery) {
- onSearchSubmit(lastSearchQuery);
+ isSearchSubmitted = isSearchSubmitted;
+ inputRef.current?.blur();
+ onSearchBlur();
+ setScrollControllerPointerEvents('auto')
  }
- setIsFocused(false);
- }
-}, [isWebViewActive, lastSearchQuery]);
-
-useEffect(() => {
- const handleAppStateChange = (nextAppState: string) => {
- if (nextAppState === 'background' || nextAppState === 'inactive') {
- saveToCache({
- searchValue,
- submitted: isSearchSubmitted,
- currentUrl: navigationState.currentUrl,
- shortUrl: navigationState.shortUrl,
- navigationState,
- });
- }
- };
-
- const subscription = AppState.addEventListener('change', handleAppStateChange);
-
- return () => {
- subscription?.remove();
- };
-}, [searchValue, isSearchSubmitted, navigationState]);
-
-useEffect(() => {
- return () => {
- saveToCache({
- searchValue,
- submitted: isSearchSubmitted,
- currentUrl: navigationState.currentUrl,
- shortUrl: navigationState.shortUrl,
- navigationState,
- });
- };
-}, []);
-
+}, [isWebViewActive]);
  return (
 <View style={localStyles.absoluteContainer} pointerEvents="box-none">
 <Animated.View
@@ -1474,7 +1409,7 @@ zIndex: webInfoZIndex,
 </Animated.View>
 </Animated.View>
 
-{isSearchSubmitted && (
+{isWebViewActive && (
 <Blury
 parentRadius={bluryParentRadius}
 radius={bluryRadius}
@@ -1486,7 +1421,7 @@ scaleX={bluryScaleX}
 />
 )}
 </Animated.View>
-{isSearchSubmitted && isWebViewActive && (<View 
+{isWebViewActive && (<View 
 {...panResponder.panHandlers} 
 style={[localStyles.scrollController, {transform:[{translateY:scrollControllerY}]}]} 
 pointerEvents={scrollControllerPointerEvents}
