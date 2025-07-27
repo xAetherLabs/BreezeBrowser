@@ -356,7 +356,7 @@ return () => clearInterval(interval);
  
 const [isWebInfoVisible, setIsWebInfoVisible] = useState(false);
 const webInfoOpacity = useRef(new Animated.Value(0)).current;
-const [webInfoZIndex, setWebInfoZIndex] = useState(-9); // Use regular state instead of Animated.Value
+const [webInfoZIndex, setWebInfoZIndex] = useState(-9);
 const [scrollControllerPointerEvents, setScrollControllerPointerEvents] = useState<'auto' | 'none'>('auto');
 const [gradientHeight, setGradientHeight] = useState(195);
 const [bluryHeight, setBluryHeight] = useState('88%');
@@ -415,7 +415,6 @@ outputRange: ['#00000000', '#00000009'],
  loadCachedData();
  }, []);
 
- // Cache state changes
  useEffect(() => {
  const cacheData = async () => {
  await saveToCache({
