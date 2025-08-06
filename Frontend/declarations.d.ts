@@ -8,6 +8,21 @@ declare module '*.jpeg' {
   export default content;
 }
 
+declare module '*.webp' {
+  const content: number;
+  export default content;
+}
+
+declare module '*.avif' {
+  const content: number;
+  export default content;
+}
+
+declare module '*.mp4' {
+  const content: number;
+  export default content;
+}
+
 declare module '*.svg' {
   import React from 'react';
   import { SvgProps } from 'react-native-svg';

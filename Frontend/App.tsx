@@ -12,27 +12,50 @@ import {
  LayoutChangeEvent,
  ViewStyle,
  Keyboard,
+ TouchableOpacity,
 } from 'react-native';
-import { useSharedValue } from 'react-native-reanimated';
 import { styles } from './components/styles/computed/styles';
 import { PrivacyView } from './screens/PrivacyView';
-import { BrowserView } from './screens/BrowserView';
+import { BrowserView, displayBottomBar, hideDownloadsView } from './screens/BrowserView';
 import { BottomBar } from './components/elements/BottomBar';
 import { BottomTabAction } from './constants/BottomTabAction';
-import { Pad } from './components/elements/Components';
+import { Break, Pad } from './components/elements/Components';
 import favicon from './assets/images/favico.png';
 import { DeviceIcon } from './components/icons/Icons';
+import { TextBold, TextMed } from './components/fonts/TextBox';
+import { GlobalContextMenu } from './context/GlobalContextMenu';
+import { Blury } from './components/elements/Blurry';
+import { CustomViewProvider, useCustomView } from './context/CustomViewContext';
+import { ThemeHanlder } from './screens/modules/ThemeHandler';
+import { BackgroundHelper } from './screens/modules/BackgroundHelper';
+import { MeterProvider } from './context/MeterContext';
+import { WelcomeScreen } from './WelcomeScreen';
+import { Buffer } from 'buffer'
+import { WalletProvider } from './context/WalletContext';
+import './polyfills';
 
 type TabData = {
  id: number;
  url: string | null;
 };
 
+global.Buffer = Buffer
+
 const TABS_STORAGE_KEY = '@browser_tabs';
 const ACTIVE_TAB_STORAGE_KEY = '@active_tab_index';
 const BROWSER_VISIBLE_STORAGE_KEY = '@browser_visible';
 
-export default function App() {
+let globalHideBottomBar: (() => void) | null = null;
+
+export const removeBottomBar = () => {
+ if (globalHideBottomBar) {
+ globalHideBottomBar();
+ }
+};
+
+let globalShowCustomView: (() => void) | null = null;
+
+function AppMain() {
  const [isBrowserVisible, setIsBrowserVisible] = useState(false);
  const [slideWidth, setSlideWidth] = useState(0);
  const [isTabOverview, setIsTabOverview] = useState(false);
@@ -42,12 +65,24 @@ export default function App() {
  const [activeTabIndex, setActiveTabIndex] = useState(0);
  const [resetTrigger, setResetTrigger] = useState(0);
  const [isLoading, setIsLoading] = useState(true);
-
  const [fontsLoaded] = Font.useFonts({
  'Font-Regular': require('./components/fonts/SF-Pro-Rounded-Medium.otf'),
  'Font-Bold': require('./components/fonts/SF-Pro-Rounded-Bold.otf'),
  'Font-Heavy': require('./components/fonts/SF-Pro-Rounded-Heavy.otf'),
+ 'Font-Pixel': require('./components/fonts/RasterForgeRegular-JpBgm.ttf'),
  });
+ const { showCustomView, hideCustomView, customizeViewStyle, customizeViewHelperStyle, themeToggleHelperStyle, toggleSettings, toggleThemes } = useCustomView();
+
+ const [localZIndex, setLocalZIndex] = useState(-9);
+
+ useEffect(() => {
+ const interval = setInterval(() => {
+ if (typeof window !== 'undefined' && (window as any).downloadsViewHelperZindex !== undefined) {
+ setLocalZIndex((window as any).downloadsViewHelperZindex);
+ }
+ }, 0);
+ return () => clearInterval(interval);
+ }, []);
 
  const privacyViewFade = useRef(new Animated.Value(1)).current;
  const browserViewFade = useRef(new Animated.Value(0)).current;
@@ -129,6 +164,13 @@ const saveBrowserState = async () => {
  console.error('Error saving browser state:', error);
  }
 };
+
+useEffect(() => {
+globalHideBottomBar = putBottomBarDown;
+return () => {
+globalHideBottomBar = null;
+};
+}, []);
 
 useEffect(() => {
  if (!isLoading) {
@@ -447,6 +489,20 @@ useEffect(() => {
  opacity: tapBlockerOpacity,
  };
 
+ const putBottomBarDown = () => {
+ Animated.parallel([
+ Animated.timing(bottomBarContentY, {
+ toValue: 100,
+ duration: 800,
+ easing: Easing.bezier(0.16, 1, 0.29, 0.99),
+ useNativeDriver: true,
+ })
+ ]).start();
+ console.log('bottom bar is')
+ }
+
+  const { privacySwitchZindex } = useCustomView()
+
  return (
  <>
  <View style={StyleSheet.absoluteFill}>
@@ -461,7 +517,7 @@ useEffect(() => {
  viewFade={privacyViewFade}
  contentFade={privacyContentFade}/>
  {/* Switch */}
- <Pad style={styles.switchContainer} px={25}>
+ <Pad style={[styles.switchContainer,{zIndex:privacySwitchZindex}]} px={15}>
  <Pressable
  style={styles.switchSlide}
  onPress={handleSwitch}
@@ -505,7 +561,7 @@ useEffect(() => {
  bottomBarContentOpacity={bottomBarContentOpacity}
  bottomBarContentY={bottomBarContentY}/>
  {/* Switch */}
- <Pad style={styles.switchContainer} px={25}>
+ <Pad style={styles.switchContainer} px={15}>
  <Pressable
  style={styles.switchSlide}
  onPress={handleSwitch}
@@ -556,7 +612,56 @@ useEffect(() => {
  <BottomTabAction onAddTab={addTab} />
  </Animated.View>
  </Pad>
+ <View style={[{position:'absolute',bottom:0,width:'100%',height:600, flex: 1 }]}>
+ <Pressable style={[{width:'100%',height:'100%',zIndex:localZIndex}]} onPress={hideDownloadsView}>
+ </Pressable>
+ </View>
+ <GlobalContextMenu/>
+ <Animated.View style={[styles.customizeViewHelper, customizeViewHelperStyle]}>
+ <Pressable style={styles.customizeViewHelper} onPress={()=>{hideCustomView();displayBottomBar()}}/>
+ </Animated.View>
+ <Animated.View style={[styles.customizeView, customizeViewStyle]}>
+ <Blury intensity={10} parentRadius={35} radius={39} height="100%" background="rgba(255, 255, 255, 0.0)"/>
+ <View style={[{paddingBottom:25}]}>
+ <View style={{paddingVertical:10,paddingHorizontal:15}}>
+ <Pad direction='row' align='center' justify='center'>
+ <View style={styles.themeToggle}>
+ <Animated.View style={[styles.themeToggleHelper, themeToggleHelperStyle]}/>
+ <Pad direction='row' align='center' justify='center'>
+ <TouchableOpacity style={[styles.wHalf,styles.align,styles.justify,{height:'100%'}]} onPress={toggleThemes}>
+ <TextBold color='#000000d5' size={11}>Themes</TextBold>
+ </TouchableOpacity>
+ <TouchableOpacity style={[styles.wHalf,styles.align,styles.justify,{height:'100%'}]} onPress={toggleSettings}>
+ <TextBold color='#000000d5' size={11}>Settings</TextBold>
+ </TouchableOpacity>
+ </Pad>
+ </View>
+ </Pad>
+ </View>
+ <Break py={5}/>
+ <View style={styles.center}><ThemeHanlder/></View>
+ <Break py={7}/>
+ <Pad px={25} style={styles.wFull} align='flex-start' direction='column'>
+ <TextBold color='#000000' size={13}>Background</TextBold>
+ <Break py={5}/>
+ <BackgroundHelper/>
+ </Pad>
+ </View>
+ </Animated.View>
+ <WelcomeScreen/>
  </>
+ );
+}
+
+export default function App() {
+ return (
+ <WalletProvider>
+ <CustomViewProvider>
+ <MeterProvider>
+ <AppMain />
+ </MeterProvider>
+ </CustomViewProvider>
+ </WalletProvider>
  );
 }
 
@@ -608,3 +713,13 @@ const localStyles = StyleSheet.create({
  flexDirection: 'row',
  },
 });
+
+const types = StyleSheet.create({
+clearDownloadsHelper: {
+width: '100%',
+height: '100%',
+position: 'absolute',
+top: 0,
+left: 0,
+}
+})

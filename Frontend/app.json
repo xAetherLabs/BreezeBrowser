@@ -1,38 +1,79 @@
 {
   "expo": {
-    "assets": [
-      "./components/fonts/"
-    ],
     "name": "Breeze",
     "slug": "Breeze",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
-    "userInterfaceStyle": "light",
+    "icon": "./assets/images/favico.png",
+    "scheme": "breeze",
+    "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
+    "backgroundColor": "#070a1a",
+    "primaryColor": "#070a1a",
     "splash": {
-      "image": "./assets/splash-icon.png",
+      "image": "./assets/images/favico.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#070a1a"
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.anonymous.Breeze"
+      "orientation": "portrait",
+      "bundleIdentifier": "com.mcfela.Breeze",
+      "icon": "./assets/images/favico.png",
+      "splash": {
+        "image": "./assets/images/favico.png",
+        "resizeMode": "contain",
+        "backgroundColor": "#070a1a"
+      }
     },
     "android": {
+      "minSdkVersion": 24,
+      "compileSdkVersion": 35,
+      "targetSdkVersion": 35,
+      "icon": "./assets/images/favico.png",
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
+        "foregroundImage": "./assets/images/favico.png",
+        "backgroundImage": "./assets/images/adaptive-icon-background.png",
+        "backgroundColor": "#070a1a"
+      },
+      "splash": {
+        "image": "./assets/images/favico.png",
+        "resizeMode": "contain",
+        "backgroundColor": "#070a1a",
+        "mdpi": "./assets/images/favico.png",
+        "hdpi": "./assets/images/favico.png",
+        "xhdpi": "./assets/images/favico.png",
+        "xxhdpi": "./assets/images/favico.png",
+        "xxxhdpi": "./assets/images/favico.png"
       },
       "edgeToEdgeEnabled": true,
-      "package": "com.anonymous.Breeze"
+      "package": "com.mcfela.Breeze"
     },
     "web": {
-      "favicon": "./assets/favicon.png"
+      "bundler": "metro",
+      "output": "static",
+      "favicon": "./assets/images/favico.png",
+      "backgroundColor": "#070a1a"
+    },
+    "plugins": [
+      "expo-router",
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/images/favico.png",
+          "imageWidth": 200,
+          "resizeMode": "contain",
+          "backgroundColor": "#070a1a"
+        }
+      ]
+    ],
+    "experiments": {
+      "typedRoutes": true
     },
     "extra": {
+      "router": {},
       "eas": {
-        "projectId": "d01b5ec7-73bf-4152-9229-ac92eb4f27a9"
+        "projectId": "42753ec6-ff44-4508-8ad2-5f01676f0b2e"
       }
     }
   }
