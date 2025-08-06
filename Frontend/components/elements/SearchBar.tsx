@@ -80,7 +80,6 @@ onSubmitEditing();
 
 const handleCancel = () => {
 onTextChanged('');
-onCancel();
 };
 
 useEffect(() => {
@@ -134,10 +133,9 @@ const showCancel = value.length > 0 && !isSubmitted;
 
 return (
 <Animated.View style={[styles.searchBar, style]}>
-{showPlaceholder && (
+{/* {showPlaceholder && (
 <Text style={styles.searchPlaceHolder}>Type to search</Text>
-)}
-
+)} */}
 <View style={styles.align}>
 <AnimatedTextInput
 ref={ref}
@@ -157,16 +155,8 @@ style={[styles.searchInput, animatedInputStyle]}
 returnKeyType="search"
 blurOnSubmit={true}
 editable={true}
-placeholder=""
-placeholderTextColor="transparent"
-/>
+placeholder="Search or enter URL"/>
 </View>
-
-{showCancel && (
-<Pressable onPress={handleCancel} style={styles.searchCancel}>
-<CancelIcon width={19} height={19} opacity={0.3} />
-</Pressable>
-)}
 </Animated.View>
 );
 }

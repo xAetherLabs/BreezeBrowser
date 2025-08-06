@@ -1,6 +1,18 @@
 import React from 'react';
-import Svg, { Circle, G, Line, Path, Rect } from 'react-native-svg';
+import { Image } from 'react-native';
+import Svg, { Circle, G, Line, LinearGradient, Path, Polyline, Rect, Stop } from 'react-native-svg';
 import { SvgProps } from 'react-native-svg';
+import { ImageProps } from 'react-native';
+import pfd from '../../assets/images/pdf.png'
+import svg from '../../assets/images/svg.png'
+import mp3 from '../../assets/images/mp3.png'
+import mp4 from '../../assets/images/mp4.png'
+import png from '../../assets/images/png.png'
+import file from '../../assets/images/file.png'
+import code from '../../assets/images/code.png'
+import html from '../../assets/images/html.png'
+import solana from '../../assets/images/solana.png'
+import favicon from '../../assets/images/favico.png'
 
 export const PlusIcon: React.FC<SvgProps> = (props) => {
   return (
@@ -215,6 +227,21 @@ export const ShareIcon: React.FC<SvgProps> = (props) => {
   );
 };
 
+export const ShareArticleIcon: React.FC<SvgProps> = (props) => {
+  return (
+  <Svg viewBox="0 0 21 21" fill="#ffffff" {...props}>
+  <G id="SVGRepo_bgCarrier" stroke-width="0"/>
+  <G id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round" stroke="#CCCCCC" stroke-width="1.764">
+  <G fill="none" fill-rule="evenodd" stroke="#ffffff" stroke-linecap="round" stroke-linejoin="round" transform="translate(4 2)">
+  <Path d="m8.5 2.5-1.978-2-2.022 2"/><Path d="m6.5.5v9"/>
+  <Path d="m3.5 4.5h-1c-1.1045695 0-2 .8954305-2 2v7c0 1.1045695.8954305 2 2 2h8c1.1045695 0 2-.8954305 2-2v-7c0-1.1045695-.8954305-2-2-2h-1"/></G></G>
+  <G id="SVGRepo_iconCarrier"><G fill="none" fill-rule="evenodd" stroke="#ffffff" stroke-linecap="round" stroke-linejoin="round" transform="translate(4 2)">
+  <Path d="m8.5 2.5-1.978-2-2.022 2"/><Path d="m6.5.5v9"/>
+  <Path d="m3.5 4.5h-1c-1.1045695 0-2 .8954305-2 2v7c0 1.1045695.8954305 2 2 2h8c1.1045695 0 2-.8954305 2-2v-7c0-1.1045695-.8954305-2-2-2h-1"/></G></G>
+  </Svg>
+  );
+};
+
 export const GoogleIcon: React.FC<SvgProps> = (props) => {
   return (
   <Svg viewBox="-0.5 0 48 48" width={48} height={48} {...props}>
@@ -292,7 +319,7 @@ export const DownloadIcon: React.FC<SvgProps> = (props) => {
 };
 
 export const DeviceIcon: React.FC<SvgProps> = (props) => {
-  return(
+ return(
  <Svg viewBox="0 0 24 24" fill="none" {...props}>
  <G id="SVGRepo_iconCarrier">
  <Path
@@ -307,4 +334,173 @@ export const DeviceIcon: React.FC<SvgProps> = (props) => {
  />
  </G>
  </Svg>
+)}
+
+export const ThemeIcon: React.FC<SvgProps> = (props) => {
+ return(
+<Svg viewBox="0 0 48 48" fill="#ffffff" stroke="#ffffff" {...props}>
+<G id="SVGRepo_bgCarrier" stroke-width="0"></G><G id="SVGRepo_tracerCarrier" stroke-linecap="round"
+stroke-linejoin="round"></G><G id="SVGRepo_iconCarrier"><G id="Layer_2" data-name="Layer 2"><G id="Icons">
+<G><Rect width="48" height="48" fill="none"></Rect><G><Path d="M14,24A10,10,0,0,0,24,34V14A10,10,0,0,0,14,24Z">
+</Path><Path d="M24,2A22,22,0,1,0,46,24,21.9,21.9,0,0,0,24,2ZM6,24A18.1,18.1,0,0,1,24,6v8a10,10,0,0,1,0,20v8A18.1,18.1,0,0,1,6,24Z"></Path>
+</G></G></G></G></G></Svg>
+)}
+
+export const SwitchIcon: React.FC<SvgProps> = (props) => {
+ return(
+<Svg fill="#ffffff" viewBox="0 0 24 24" id="switch-double" stroke="#ffffff" {...props}>
+<G id="SVGRepo_bgCarrier" stroke-width="0"></G><G id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round">
+</G><G id="SVGRepo_iconCarrier"><Path d="M12,6.5A5.37,5.37,0,0,0,13.26,10H5.5a3.5,3.5,0,1,1,0-7h7.77A5.4,5.4,0,0,0,12,6.5Z">
+</Path><Path d="M22,17.5A3.48,3.48,0,0,1,18.5,21H10.73A5.4,5.4,0,0,0,12,17.5,5.45,5.45,0,0,0,10.73,14H18.5A3.5,3.5,0,0,1,22,17.5Z">
+</Path><Path d="M22,6.07A4.5,4.5,0,0,0,17.5,2,4.52,4.52,0,0,0,13,6.5a4.4,4.4,0,0,0,1.36,3.21A4.45,4.45,0,0,0,17.5,11,4.5,4.5,0,0,0,22,6.93a2.08,2.08,0,0,0,0-.43A2.08,2.08,0,0,0,22,6.07Z">
+</Path><Path d="M6.5,13A4.5,4.5,0,0,0,2,17.07a3.1,3.1,0,0,0,0,.86A4.5,4.5,0,0,0,6.5,22a4.44,4.44,0,0,0,3.13-1.28A4.4,4.4,0,0,0,11,17.5,4.52,4.52,0,0,0,6.5,13Z"></Path></G></Svg>
+)}
+
+export const LeafIcon: React.FC<SvgProps> = (props) => {
+ return(
+<Svg viewBox="0 0 24 24" fill="none" {...props}>
+<G id="SVGRepo_bgCarrier" stroke-width="0"></G><G id="SVGRepo_tracerCarrier"
+stroke-linecap="round" stroke-linejoin="round"></G><G id="SVGRepo_iconCarrier">
+<Path d="M13.47 7.41158L15.93 6.20158C16.23 6.05158 16.31 5.66158 16.08 5.42158C15.19 4.44158 14.29 3.62158 13.57 3.00158C13.24 2.72158 12.75 2.95158 12.75 3.38158V6.96158C12.75 7.33158 13.14 7.57158 13.47 7.41158Z" fill="#292D32">
+</Path><Path d="M12.75 19.7384V21.3884C12.75 21.6884 13.02 21.9384 13.32 21.8884C16.05 21.4384 18.33 19.6084 19.41 17.1484C19.6 16.7284 19.14 16.3084 18.72 16.5084L13.03 19.2984C12.86 19.3784 12.75 19.5484 12.75 19.7384Z" fill="#292D32">
+</Path><Path d="M11.2505 3.36159C11.2505 2.93159 10.7605 2.70159 10.4305 2.97159C8.07046 4.95159 3.88046 9.12158 3.90046 13.9016C3.90046 17.9216 6.84046 21.2516 10.6805 21.8916C10.9805 21.9416 11.2505 21.6916 11.2505 21.3916V3.36159Z" fill="#292D32">
+</Path><Path d="M13.4402 12.4714L18.7302 10.2514C19.0002 10.1314 19.1302 9.82141 19.0002 9.56141C18.6302 8.83141 18.2002 8.12141 17.7302 7.46141C17.5902 7.26141 17.3302 7.20141 17.1102 7.30141L13.0202 9.29141C12.8502 9.37141 12.7402 9.55141 12.7402 9.74141V12.0114C12.7502 12.3614 13.1102 12.6114 13.4402 12.4714Z" fill="#292D32">
+</Path><Path d="M19.83 14.3107C19.99 14.2307 20.09 14.0807 20.09 13.9107C20.09 13.2707 20.01 12.6407 19.87 12.0207C19.8 11.7207 19.47 11.5607 19.19 11.6807L13.05 14.3007C12.87 14.3807 12.75 14.5607 12.75 14.7607V16.9607C12.75 17.3307 13.14 17.5707 13.47 17.4107L19.37 14.5407L19.83 14.3107Z" fill="#292D32">
+</Path></G></Svg>
+)}
+
+export const CheckIcon: React.FC<SvgProps> = (props) => {
+return(
+<Svg viewBox="0 0 24 24" fill="none" {...props}><G id="SVGRepo_bgCarrier" stroke-width="3" stroke={'red'}>
+</G><G id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></G><G id="SVGRepo_iconCarrier">
+<Path fill-rule="evenodd" clip-rule="evenodd" d="M22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12ZM16.0303 8.96967C16.3232 9.26256 16.3232 9.73744 16.0303 10.0303L11.0303 15.0303C10.7374 15.3232 10.2626 15.3232 9.96967 15.0303L7.96967 13.0303C7.67678 12.7374 7.67678 12.2626 7.96967 11.9697C8.26256 11.6768 8.73744 11.6768 9.03033 11.9697L10.5 13.4393L12.7348 11.2045L14.9697 8.96967C15.2626 8.67678 15.7374 8.67678 16.0303 8.96967Z" fill="#ffffff">
+</Path></G></Svg>
+)}
+
+export const HomeIcon: React.FC<SvgProps> = (props) => {
+return(
+<Svg viewBox="0 0 24 24" fill="none" {...props}><G id="SVGRepo_bgCarrier" stroke-width="0">
+</G><G id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></G><G id="SVGRepo_iconCarrier">
+<Path d="M21 17.8109V10.8663C21 9.88216 20.5726 8.95316 19.8418 8.34896L14.4558 3.89571C13.0113 2.70143 10.9887 2.70143 9.54424 3.89571L4.15818 8.34896C3.42742 8.95316 3 9.88216 3 10.8663V17.8109C3 19.5722 4.34315 21 6 21H8C8.55228 21 9 20.5523 9 20V16.7478C9 14.9865 10.3431 13.5587 12 13.5587C13.6569 13.5587 15 14.9865 15 16.7478V20C15 20.5523 15.4477 21 16 21H18C19.6569 21 21 19.5722 21 17.8109Z" stroke="#ffffff" stroke-width="2">
+</Path></G></Svg>
+)}
+
+export const AppsIcon: React.FC<SvgProps> = (props) => {
+return(
+<Svg viewBox="0 0 24 24" fill="#000000" {...props}><G id="SVGRepo_bgCarrier" stroke-width="0"></G>
+<G id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></G>
+<G id="SVGRepo_iconCarrier"><G id="🔍-Product-Icons" stroke="none" stroke-width="1"
+fill="none" fill-rule="evenodd"><G id="ic_fluent_apps_add_in_24_filled" fill="#ffffff" fill-rule="nonzero">
+<Path d="M10.5,3 C11.8807119,3 13,4.11928813 13,5.5 L13,11 L18.5,11 C19.8807119,11 21,12.1192881 21,13.5 L21,18.5 C21,19.8807119 19.8807119,21 18.5,21 L5.5,21 C4.11928813,21 3,19.8807119 3,18.5 L3,5.5 C3,4.11928813 4.11928813,3 5.5,3 L10.5,3 Z M11,13 L5,13 L5,18.5 C5,18.7761424 5.22385763,19 5.5,19 L11,19 L11,13 Z M18.5,13 L13,13 L13,19 L18.5,19 C18.7761424,19 19,18.7761424 19,18.5 L19,13.5 C19,13.2238576 18.7761424,13 18.5,13 Z M10.5,5 L5.5,5 C5.22385763,5 5,5.22385763 5,5.5 L5,11 L11,11 L11,5.5 C11,5.22385763 10.7761424,5 10.5,5 Z M17.8833789,2.00672773 L18,2 C18.5128358,2 18.9355072,2.38604019 18.9932723,2.88337887 L19,3 L19,5 L21,5 C21.5128358,5 21.9355072,5.38604019 21.9932723,5.88337887 L22,6 C22,6.51283584 21.6139598,6.93550716 21.1166211,6.99327227 L21,7 L19,7 L19,9 C19,9.51283584 18.6139598,9.93550716 18.1166211,9.99327227 L18,10 C17.4871642,10 17.0644928,9.61395981 17.0067277,9.11662113 L17,9 L17,7 L15,7 C14.4871642,7 14.0644928,6.61395981 14.0067277,6.11662113 L14,6 C14,5.48716416 14.3860402,5.06449284 14.8833789,5.00672773 L15,5 L17,5 L17,3 C17,2.48716416 17.3860402,2.06449284 17.8833789,2.00672773 L18,2 L17.8833789,2.00672773 Z" id="🎨-Color">
+</Path></G></G></G></Svg>
+)}
+
+export const SearchIcon: React.FC<SvgProps> = (props) => {
+return(
+<Svg viewBox="0 0 24 24" fill="none" {...props}><G id="SVGRepo_bgCarrier" stroke-width="0"></G>
+<G id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></G><G id="SVGRepo_iconCarrier">
+<Path d="M11 6C13.7614 6 16 8.23858 16 11M16.6588 16.6549L21 21M19 11C19 15.4183 15.4183 19 11 19C6.58172 19 3 15.4183 3 11C3 6.58172 6.58172 3 11 3C15.4183 3 19 6.58172 19 11Z" stroke="#ffffff" stroke-width="2.232" stroke-linecap="round" stroke-linejoin="round">
+</Path></G></Svg>
+)}
+
+export const WalletIcon: React.FC<SvgProps> = (props) => {
+return(
+<Svg viewBox="0 0 24 24" fill="none" {...props}><G id="SVGRepo_bgCars qqrier" stroke-width="0"></G>
+<G id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round">
+</G><G id="SVGRepo_iconCarrier"><Path d="M13 11.1499H7" stroke="#ffffff" stroke-width="2.16"
+stroke-linecap="round" stroke-linejoin="round"></Path><Path d="M2 11.1501V6.53009C2 4.49009 3.65 2.84009 5.69 2.84009H11.31C13.35 2.84009 15 4.11009 15 6.15009" stroke="#ffffff" stroke-width="2.16" stroke-linecap="round" stroke-linejoin="round">
+</Path><Path d="M17.48 12.1999C16.98 12.6799 16.74 13.4199 16.94 14.1799C17.19 15.1099 18.11 15.6999 19.07 15.6999H20V17.1499C20 19.3599 18.21 21.1499 16 21.1499H6C3.79 21.1499 2 19.3599 2 17.1499V10.1499C2 7.9399 3.79 6.1499 6 6.1499H16C18.2 6.1499 20 7.9499 20 10.1499V11.5999H18.92C18.36 11.5999 17.85 11.8199 17.48 12.1999Z" stroke="#ffffff" stroke-width="2.16" stroke-linecap="round" stroke-linejoin="round">
+</Path><Path d="M22 12.6201V14.6801C22 15.2401 21.5399 15.7001 20.9699 15.7001H19.0399C17.9599 15.7001 16.97 14.9101 16.88 13.8301C16.82 13.2001 17.0599 12.6101 17.4799 12.2001C17.8499 11.8201 18.36 11.6001 18.92 11.6001H20.9699C21.5399 11.6001 22 12.0601 22 12.6201Z" stroke="#ffffff" stroke-width="2.16" stroke-linecap="round" stroke-linejoin="round">
+</Path></G></Svg>
+)}
+
+export const ArrowSlantDownIcon: React.FC<SvgProps> = (props) => {
+return(
+<Svg viewBox="0 0 24 24" fill="#000000" {...props}><G id="SVGRepo_bgCarrier" stroke-width="0"></G>
+<G id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></G>
+<G id="SVGRepo_iconCarrier"><G id="Complete"><G id="arrow-down-right"><G>
+<Polyline data-name="Right" fill="none" id="Right-2" points="11.6 18.7 18.7 18.7 18.7 11.6"
+stroke="#ffffff" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.4"></Polyline>
+<Line fill="none" stroke="#ffffff" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.4"
+x1="5.3" x2="17.1" y1="5.3" y2="17.1"></Line></G></G></G></G></Svg>
+)}
+
+export const SwapIcon: React.FC<SvgProps> = (props) => {
+return(
+<Svg viewBox="0 0 24 24" fill="none" {...props}><G id="SVGRepo_bgCarrier" stroke-width="0"></G>
+<G id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></G>
+<G id="SVGRepo_iconCarrier"><Path d="M6 19L3 16M3 16L6 13M3 16H11C12.6569 16 14 14.6569 14 13V12M10 12V11C10 9.34315 11.3431 8 13 8H21M21 8L18 11M21 8L18 5"
+stroke="#070a1a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></Path></G></Svg>
+)}
+
+export const ProfileIcon: React.FC<SvgProps> = (props) => {
+return(
+<Svg viewBox="0 0 20 20" fill="#000000" {...props}><G id="SVGRepo_bgCarrier" stroke-width="0"></G>
+<G id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></G><G id="SVGRepo_iconCarrier">
+<G id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd"><G id="Dribbble-Light-Preview"
+transform="translate(-140.000000, -2159.000000)" fill="#ffffff"><G id="icons" transform="translate(56.000000, 160.000000)">
+<Path d="M100.562548,2016.99998 L87.4381713,2016.99998 C86.7317804,2016.99998 86.2101535,2016.30298 86.4765813,2015.66198 C87.7127655,2012.69798 90.6169306,2010.99998 93.9998492,2010.99998 C97.3837885,2010.99998 100.287954,2012.69798 101.524138,2015.66198 C101.790566,2016.30298 101.268939,2016.99998 100.562548,2016.99998 M89.9166645,2004.99998 C89.9166645,2002.79398 91.7489936,2000.99998 93.9998492,2000.99998 C96.2517256,2000.99998 98.0830339,2002.79398 98.0830339,2004.99998 C98.0830339,2007.20598 96.2517256,2008.99998 93.9998492,2008.99998 C91.7489936,2008.99998 89.9166645,2007.20598 89.9166645,2004.99998 M103.955674,2016.63598 C103.213556,2013.27698 100.892265,2010.79798 97.837022,2009.67298 C99.4560048,2008.39598 100.400241,2006.33098 100.053171,2004.06998 C99.6509769,2001.44698 97.4235996,1999.34798 94.7348224,1999.04198 C91.0232075,1998.61898 87.8750721,2001.44898 87.8750721,2004.99998 C87.8750721,2006.88998 88.7692896,2008.57398 90.1636971,2009.67298 C87.1074334,2010.79798 84.7871636,2013.27698 84.044024,2016.63598 C83.7745338,2017.85698 84.7789973,2018.99998 86.0539717,2018.99998 L101.945727,2018.99998 C103.221722,2018.99998 104.226185,2017.85698 103.955674,2016.63598" id="profile_round-[#fffffffffff]">
+</Path></G></G></G></G></Svg>
+)}
+
+export const WavesIcon: React.FC<SvgProps> = (props) => {
+return(
+<Svg viewBox="0 0 24 24" fill="#000000" {...props}><G id="SVGRepo_bgCarrier" stroke-width="0"></G>
+<G id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></G>
+<G id="SVGRepo_iconCarrier"><G id="页面-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+<G id="Media" transform="translate(-960.000000, -144.000000)" fill-rule="nonzero">
+<G id="voice_fill" transform="translate(960.000000, 144.000000)">
+<Path d="M24,0 L24,24 L0,24 L0,0 L24,0 Z M12.5934901,23.257841 L12.5819402,23.2595131 L12.5108777,23.2950439 L12.4918791,23.2987469 L12.4918791,23.2987469 L12.4767152,23.2950439 L12.4056548,23.2595131 C12.3958229,23.2563662 12.3870493,23.2590235 12.3821421,23.2649074 L12.3780323,23.275831 L12.360941,23.7031097 L12.3658947,23.7234994 L12.3769048,23.7357139 L12.4804777,23.8096931 L12.4953491,23.8136134 L12.4953491,23.8136134 L12.5071152,23.8096931 L12.6106902,23.7357139 L12.6232938,23.7196733 L12.6232938,23.7196733 L12.6266527,23.7031097 L12.609561,23.275831 C12.6075724,23.2657013 12.6010112,23.2592993 12.5934901,23.257841 L12.5934901,23.257841 Z M12.8583906,23.1452862 L12.8445485,23.1473072 L12.6598443,23.2396597 L12.6498822,23.2499052 L12.6498822,23.2499052 L12.6471943,23.2611114 L12.6650943,23.6906389 L12.6699349,23.7034178 L12.6699349,23.7034178 L12.678386,23.7104931 L12.8793402,23.8032389 C12.8914285,23.8068999 12.9022333,23.8029875 12.9078286,23.7952264 L12.9118235,23.7811639 L12.8776777,23.1665331 C12.8752882,23.1545897 12.8674102,23.1470016 12.8583906,23.1452862 L12.8583906,23.1452862 Z M12.1430473,23.1473072 C12.1332178,23.1423925 12.1221763,23.1452606 12.1156365,23.1525954 L12.1099173,23.1665331 L12.0757714,23.7811639 C12.0751323,23.7926639 12.0828099,23.8018602 12.0926481,23.8045676 L12.108256,23.8032389 L12.3092106,23.7104931 L12.3186497,23.7024347 L12.3186497,23.7024347 L12.3225043,23.6906389 L12.340401,23.2611114 L12.337245,23.2485176 L12.337245,23.2485176 L12.3277531,23.2396597 L12.1430473,23.1473072 Z" id="MingCute" fill-rule="nonzero">
+</Path><Path d="M12,2.5 C12.7796706,2.5 13.4204457,3.09488554 13.4931332,3.85553954 L13.5,4 L13.5,20 C13.5,20.8284 12.8284,21.5 12,21.5 C11.2203294,21.5 10.5795543,20.9050879 10.5068668,20.1444558 L10.5,20 L10.5,4 C10.5,3.17157 11.1716,2.5 12,2.5 Z M8,5.5 C8.82843,5.5 9.5,6.17157 9.5,7 L9.5,17 C9.5,17.8284 8.82843,18.5 8,18.5 C7.17157,18.5 6.5,17.8284 6.5,17 L6.5,7 C6.5,6.17157 7.17157,5.5 8,5.5 Z M16,5.5 C16.8284,5.5 17.5,6.17157 17.5,7 L17.5,17 C17.5,17.8284 16.8284,18.5 16,18.5 C15.1716,18.5 14.5,17.8284 14.5,17 L14.5,7 C14.5,6.17157 15.1716,5.5 16,5.5 Z M4,8.5 C4.82843,8.5 5.5,9.17157 5.5,10 L5.5,14 C5.5,14.8284 4.82843,15.5 4,15.5 C3.17157,15.5 2.5,14.8284 2.5,14 L2.5,10 C2.5,9.17157 3.17157,8.5 4,8.5 Z M20,8.5 C20.7796706,8.5 21.4204457,9.09488554 21.4931332,9.85553954 L21.5,10 L21.5,14 C21.5,14.8284 20.8284,15.5 20,15.5 C19.2203294,15.5 18.5795543,14.9050879 18.5068668,14.1444558 L18.5,14 L18.5,10 C18.5,9.17157 19.1716,8.5 20,8.5 Z" id="形状" fill="#070a1a">
+</Path></G></G></G></G></Svg>
+)}
+
+export const FavIcon: React.FC<ImageProps> = (props) => {
+ return(
+ <Image source={favicon} {...props}/>
+)}
+
+export const SolanaIcon: React.FC<ImageProps> = (props) => {
+ return(
+ <Image source={solana} {...props}/>
+)}
+
+export const PdfIcon: React.FC<ImageProps> = (props) => {
+ return(
+ <Image source={pfd} {...props}/>
+)}
+
+export const SvgIcon: React.FC<ImageProps> = (props) => {
+ return(
+ <Image source={svg} {...props}/>
+)}
+
+export const AudioIcon: React.FC<ImageProps> = (props) => {
+ return(
+ <Image source={mp3} {...props}/>
+)}
+
+export const VideoIcon: React.FC<ImageProps> = (props) => {
+ return(
+ <Image source={mp4} {...props}/>
+)}
+
+export const ImageIcon: React.FC<ImageProps> = (props) => {
+ return(
+ <Image source={png} {...props}/>
+)}
+
+export const FileIcon: React.FC<ImageProps> = (props) => {
+ return(
+ <Image source={file} {...props}/>
+)}
+
+export const CodeIcon: React.FC<ImageProps> = (props) => {
+ return(
+ <Image source={code} {...props}/>
+)}
+
+export const HtmlIcon: React.FC<ImageProps> = (props) => {
+ return(
+ <Image source={html} {...props}/>
 )}

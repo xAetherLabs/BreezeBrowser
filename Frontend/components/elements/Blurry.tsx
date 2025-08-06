@@ -9,13 +9,14 @@ interface BluryProps {
  height?: string;
  zindex?: number;
  scaleX?: number;
+ scaleY?: number;
  parentRadius?: number;
  background?: string;
 }
 
-export const Blury: React.FC<BluryProps> = ({radius, intensity, bottom, top, background='rgba(0, 0, 0, .1)', zindex, height='88%', parentRadius, scaleX = 1,}) => {
+export const Blury: React.FC<BluryProps> = ({radius, intensity, bottom, top, background='rgba(0, 0, 0, .1)', zindex, height='88%', parentRadius, scaleX = 1, scaleY = 1}) => {
  return (
- <View style={[ types.blury, { height: height, bottom, top, zIndex: zindex, borderRadius: parentRadius, transform: [{ scaleX }] }]}>
+ <View style={[ types.blury, { height: height, bottom, top, zIndex: zindex, borderRadius: parentRadius, transform: [{ scaleX },{ scaleY }] }]}>
  <BlurView borderRadius={radius} backgroundColor={background} blurRadius={intensity}/>
  </View>
  );

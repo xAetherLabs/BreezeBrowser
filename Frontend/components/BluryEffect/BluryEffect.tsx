@@ -48,12 +48,9 @@ top: 0;
 right:0;
 bottom: 0;
 left: 0;
-
 background: ${backgroundColor};
-
 -webkit-backdrop-filter: blur(${blurRadius}px);
 backdrop-filter: blur(${blurRadius}px);
-
 ${typeof borderRadius === 'number' && `border-radius: ${borderRadius}px;`}
 }
 </style>
@@ -63,8 +60,7 @@ ${typeof borderRadius === 'number' && `border-radius: ${borderRadius}px;`}
 </body>
 </html>
 `,
-}}
-/>
+}}/>
 </View>
 );
 

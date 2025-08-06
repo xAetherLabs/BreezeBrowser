@@ -46,12 +46,12 @@ export const styles = StyleSheet.create({
    justifyContent: 'center'
   },
   alignStart: {
-   width: '100%',
+  //  width: '100%',
    display: 'flex',
    alignItems: 'flex-start'
   },
   alignEnd: {
-   width: '100%',
+  //  width: '100%',
    display: 'flex',
    alignItems: 'flex-end'
   },
@@ -154,10 +154,8 @@ export const styles = StyleSheet.create({
   },
 
   PrivacyBottomBar: {
-   width: '100%',
    bottom: 0,
    paddingTop: .15,
-   paddingBottom: 18,
    zIndex: 999,
   //  borderTopStartRadius: 30,
   //  borderTopEndRadius: 30,
@@ -172,8 +170,7 @@ export const styles = StyleSheet.create({
    justifyContent: 'center',
    borderTopWidth: 0,
    paddingTop: 14,
-   paddingLeft: 18,
-   paddingRight: 18,
+   paddingHorizontal: 15,
   //  borderTopStartRadius: 32,
   //  borderTopEndRadius: 32,
    borderTopColor: '#ffffffac',
@@ -192,12 +189,31 @@ export const styles = StyleSheet.create({
    justifyContent: 'center',
    position: 'absolute',
   },
+  PrivacyActions: {
+   paddingVertical: 23,
+   borderRadius: 100,
+   display: 'flex',
+   alignItems: 'center',
+   justifyContent: 'center',
+  },
+  PrivacyActionsInactive: {
+   backgroundColor: '#ffffff20',
+  },
+  PrivacyActionsActive: {
+   backgroundColor: '#0025c8'
+  },
+  PrivacyActionsDiscover: {
+   width: 115,
+   paddingVertical: 23,
+   paddingHorizontal: 10,
+   backgroundColor: '#070a1a'
+  },
   bottomBar: {
    width: '100%',
    bottom: 10,
    zIndex: 999,
    borderWidth: 1.5,
-   borderColor: '#ffffffd5',
+   borderColor: '#ffffffc5',
    overflow: 'hidden',
    display: 'flex',
    alignItems: 'center',
@@ -231,6 +247,14 @@ export const styles = StyleSheet.create({
    justifyContent: 'center',
    position: 'absolute',
   },
+  bottomActionsHolder: {
+   paddingVertical: 10,
+   paddingHorizontal: 10,
+   borderRadius: 100,
+   backgroundColor: '#fffffff4',
+   borderWidth: 1.5,
+   borderColor: '#ffffff'
+  },
   shadower: {
    width: '100%',
    bottom: 0,
@@ -238,7 +262,7 @@ export const styles = StyleSheet.create({
    zIndex: 99
   },
   PrivacySearchBar: {
-   width: '70%',
+   width: '100%',
    paddingTop: 2,
    paddingLeft: 15,
    paddingRight: 15,
@@ -249,8 +273,8 @@ export const styles = StyleSheet.create({
    borderRightWidth: 1.5,
    display: 'flex',
    justifyContent: 'center',
-   borderColor: '#ffffff29',
-   backgroundColor: '#ffffff20',
+   borderColor: '#ffffff40',
+   backgroundColor: '#ffffff30',
   },
   searchBar: {
    width: '100%',
@@ -304,7 +328,7 @@ export const styles = StyleSheet.create({
   PrivacySearchPlaceHolder: {
     opacity: .4,
     fontSize: 15,
-    marginLeft: 20,
+    marginLeft: 24,
     color: '#ffffff',
     fontFamily: 'Font-Regular',
     position: 'absolute',
@@ -524,7 +548,7 @@ export const styles = StyleSheet.create({
   top: 18,
   height: 100,
   zIndex: 1,
-  width: '100%',
+  right: 0,
   display: 'flex',
   position: 'absolute',
   alignItems: 'flex-end'
@@ -628,6 +652,20 @@ PullButton: {
   borderColor: '#ffffffc5',
   backgroundColor: '#ffffffb2'
 },
+PulledButton: {
+  paddingVertical: 19,
+  paddingHorizontal: 19,
+  borderWidth: 1.5,
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  borderTopStartRadius: 100,
+  borderTopEndRadius: 100,
+  borderBottomStartRadius: 100,
+  borderBottomEndRadius: 100,
+  borderColor: '#ffffff',
+  backgroundColor: '#ffffffe4'
+},
 objectPad: {
   width: '100%',
   paddingTop: 7,
@@ -657,6 +695,65 @@ wInfoButton: {
   paddingVertical: 8,
   paddingHorizontal: 20,
   borderRadius: 100
+},
+customizeView: {
+  width: '100%',
+  paddingTop: 5,
+  backgroundColor: '#ffffffc5',
+  borderTopStartRadius: 40,
+  borderTopEndRadius: 40,
+  borderTopWidth: 1.5,
+  borderLeftWidth: 1.5,
+  borderRightWidth: 1.5,
+  borderColor: '#ffffffe4',
+  position: 'absolute',
+  bottom: 0,
+  zIndex: 999999999
+},
+customizeViewHelper: {
+  width: '100%',
+  height: '100%',
+  backgroundColor: '#00000070',
+  position: 'absolute',
+  bottom: 0,
+  left: 0,
+  top: 0,
+  right: 0
+},
+themeToggle: {
+  width: 140,
+  height: 38,
+  borderRadius: 100,
+  display: 'flex',
+  justifyContent: 'center',
+  backgroundColor: '#00000015'
+},
+themeToggleHelper: {
+  width: '50%',
+  height: '100%',
+  position: 'absolute',
+  borderRadius: 100,
+  backgroundColor: '#ffffff',
+  borderWidth: 3.5,
+  borderColor: '#00000001'
+},
+meterBar: {
+  width: '100%',
+  height: 40,
+  borderRadius: 100,
+  display: 'flex',
+  overflow: 'hidden',
+  alignItems: 'flex-start',
+  justifyContent: 'center',
+  backgroundColor: '#00000015',
+},
+meterHelper: {
+  height: '100%',
+  paddingLeft: 10,
+  backgroundColor: '#ffffffe9',
+  borderWidth: 1,
+  borderRadius: 100,
+  borderColor: '#ffffff'
 }
 });
 export const PrivateAddButton = styled.View `
@@ -694,10 +791,10 @@ export const AddButton = styled.View `
 `
 
 export const PrivatePullButton = styled.TouchableOpacity `
-  paddingTop: 16;
-  paddingBottom: 16;
-  paddingLeft: 16;
-  paddingRight: 16;
+  paddingTop: 18;
+  paddingBottom: 18;
+  paddingLeft: 18;
+  paddingRight: 18;
   borderTopWidth: 1.5;
   borderLeftWidth: 1.5;
   borderRightWidth: 1.5;
@@ -708,7 +805,7 @@ export const PrivatePullButton = styled.TouchableOpacity `
   borderTopEndRadius: 100;
   borderBottomStartRadius: 100;
   borderBottomEndRadius: 100;
-  borderColor: #ffffff35;
+  borderColor: #ffffff40;
   backgroundColor: #ffffff30;
 `
 

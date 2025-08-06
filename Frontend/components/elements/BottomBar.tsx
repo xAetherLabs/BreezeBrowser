@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { use, useEffect, useRef, useState } from 'react';
 import {
  Animated,
  TextInput,
@@ -9,10 +9,11 @@ import {
  Easing,
  Pressable,
  PanResponder,
+ ScrollView,
 } from 'react-native';
 import { AddButton, PullButton, styles } from '../styles/computed/styles';
 import { Break, Pad } from './Components';
-import { ArrowLeftDarkIcon, ArrowRightDarkIcon, ArrowUpIcon, AuxingIcon, BookerIcon, BookIcon, DesktopIcon, FindIcon, PlusIcon, RefreshIcon, ShareIcon, TabIconDark } from '../icons/Icons';
+import { ArrowLeftDarkIcon, ArrowRightDarkIcon, ArrowUpIcon, AuxingIcon, BookerIcon, BookIcon, CrossIcon, DesktopIcon, FindIcon, PlusIcon, RefreshIcon, ShareIcon, TabIconDark } from '../icons/Icons';
 import { SearchBar } from './SearchBar';
 import { BlurView } from 'expo-blur';
 import { Blury } from './Blurry';
@@ -21,6 +22,9 @@ import { Text } from 'react-native';
 import { TextBold, TextMed } from '../fonts/TextBox';
 import { globalTitleStore } from '../../screens/BrowserView'; 
 import { Themes } from '../styles/computed/themes';
+import { ReadingListItem, ReadingListManager } from '../hooks/ReadingListManager';
+import { Image } from 'react-native';
+import { useCustomView } from '../../context/CustomViewContext';
 
 const globalGradientSync = {
 gradientTranslateY: null as any,
@@ -56,6 +60,8 @@ type Props = {
  scrollControllerY?: number;
  onScrollControllerReset?: () => void;
  onTabOverviewExit?: () => void;
+ onOpenNewTab?: (url: string) => void;
+ onAddToReadingList?: (url: string, title: string, favicon?: string) => void;
 };
 
 declare global {
@@ -110,6 +116,14 @@ interface GlobalScrollState {
  triggerHide: () => void;
  triggerShow: () => void;
 }
+
+let globalHandleSumbit: (() => void) | null = null;
+
+export const submitQuery = () => {
+ if (globalHandleSumbit) {
+ globalHandleSumbit();
+ }
+};
 
 const createGlobalScrollState = (): GlobalScrollState => {
  const containerBottom = new Animated.Value(0);
@@ -225,29 +239,29 @@ const CACHE_KEY = '@bottombar_state';
 const CACHE_EXPIRY = 7 * 24 * 60 * 60 * 1000;
 
 const saveToCache = async (data: Partial<BottomBarCache>) => {
-//   try {
-//     const existingCache = await loadFromCache();
-//     const timestamp = Date.now();
-//   const cacheData: BottomBarCache = {
-//   searchValue: '',
-//   submitted: false,
-//   currentUrl: '',
-//   shortUrl: '',
-//   navigationState: {
-//     canGoBack: false,
-//     canGoForward: false,
-//     currentUrl: '',
-//     shortUrl: '',
-//   },
-//   lastUpdated: 0,
-//   ...existingCache,
-//   ...data,
-//   lastUpdated: Date.now()
+//  try {
+//  const existingCache = await loadFromCache();
+//  const timestamp = Date.now();
+//  const cacheData: BottomBarCache = {
+//  searchValue: '',
+//  submitted: false,
+//  currentUrl: '',
+//  shortUrl: '',
+//  navigationState: {
+//  canGoBack: false,
+//  canGoForward: false,
+//  currentUrl: '',
+//  shortUrl: '',
+//  },
+//  lastUpdated: 0,
+//  ...existingCache,
+//  ...data,
+//  lastUpdated: Date.now()
 // };
-//     await AsyncStorage.setItem(CACHE_KEY, JSON.stringify(cacheData));
-//   } catch (error) {
-//     console.warn('Failed to save bottom bar state to cache:', error);
-//   }
+//  await AsyncStorage.setItem(CACHE_KEY, JSON.stringify(cacheData));
+//  } catch (error) {
+//  console.warn('Failed to save bottom bar state to cache:', error);
+//  }
 };
 
 const loadFromCache = async (): Promise<Partial<BottomBarCache>> => {
@@ -277,6 +291,14 @@ const clearCache = async () => {
  }
 };
 
+ let globalSetScrollController: (() => void) | null = null;
+
+ export const resotreScrollController = () => {
+ if (globalSetScrollController) {
+ globalSetScrollController();
+ }
+ };
+
 export const BottomBar: React.FC<Props> = ({
  onActiveTabPress,
  onSearchSubmit,
@@ -292,11 +314,13 @@ export const BottomBar: React.FC<Props> = ({
  onGoForward,
  onRefresh,
  activeTabId,
+ onOpenNewTab,
+ onAddToReadingList,
  currentUrl: propCurrentUrl = '',
  shortUrl: propShortUrl = '',
 }) => {
 
- const [searchValue, setSearchValue] = useState('');
+ const { searchValue, setSearchValue } = useCustomView();
  const [isFocused, setIsFocused] = useState(false);
  const [navigationState, setNavigationState] = useState({
  canGoBack: propCanGoBack,
@@ -305,7 +329,25 @@ export const BottomBar: React.FC<Props> = ({
  shortUrl: propShortUrl,
  });
 
+ useEffect(() => {
+ globalHandleSumbit = handleQuery;
+ return () => {
+ globalHandleSumbit = null;
+ };
+ }, []);
+
 const [isWebViewActive, setIsWebViewActive] = useState(false);
+
+ useEffect(() => {
+ globalSetScrollController = setControllerYtoZero;
+ return () => {
+ globalSetScrollController = null;
+ };
+ }, []);
+
+ const setControllerYtoZero = () => {
+ setScrollControllerY(0)
+ }
 
 useEffect(() => {
 const checkBrowserViewState = () => {
@@ -355,8 +397,11 @@ return () => clearInterval(interval);
  const darkOverlayOpacity = useRef(new Animated.Value(0)).current;
  
 const [isWebInfoVisible, setIsWebInfoVisible] = useState(false);
+const [isReadingListVisible, setIsReadingListVisible] = useState(false);
 const webInfoOpacity = useRef(new Animated.Value(0)).current;
 const [webInfoZIndex, setWebInfoZIndex] = useState(-9);
+const readinListOpacity = useRef(new Animated.Value(0)).current;
+const [readinListZIndex, setReadinListZIndex] = useState(-9);
 const [scrollControllerPointerEvents, setScrollControllerPointerEvents] = useState<'auto' | 'none'>('auto');
 const [gradientHeight, setGradientHeight] = useState(195);
 const [bluryHeight, setBluryHeight] = useState('88%');
@@ -415,6 +460,7 @@ outputRange: ['#00000000', '#00000009'],
  loadCachedData();
  }, []);
 
+ // Cache state changes
  useEffect(() => {
  const cacheData = async () => {
  await saveToCache({
@@ -688,34 +734,36 @@ useNativeDriver: true,
  };
 
  const handleCancel = async () => {
-setSearchValue('');
-inputRef.current?.blur();
-setIsFocused(false);
-animateCollapseToZero();
-await clearCache();
+ if (isWebViewActive) {
+ animateCollapseTo65();
+ isSearchSubmitted = isSearchSubmitted;
+ }
+ inputRef.current?.blur();
+ setIsFocused(false);
+ animateCollapseTo65();
  };
 
  const handleFocus = () => {
 setIsFocused(true);
 onSearchFocus();
-
+setSearchValue(currentUrl)
 if (shortUrl && searchValue !== shortUrl) {
  setSearchValue(shortUrl);
 }
 
-setTimeout(() => {
  if (inputRef.current && searchValue) {
-inputRef.current.setSelection(0, searchValue.length);
+//  inputRef.current.setSelection(0, currentUrl.length);
  }
-}, 100);
 
 animateExpand();
  };
 
  const handleBlur = () => {
-setIsFocused(false);
-onSearchBlur();
-
+ if(isStartPageActive) {
+ setIsFocused(false);
+ onSearchBlur();
+ }
+ setSearchValue(shortUrl)
 if (searchValue === '' && !isSearchSubmitted) {
  animateCollapseToZero();
 } else if (isSearchSubmitted || searchValue !== '') {
@@ -723,26 +771,76 @@ if (searchValue === '' && !isSearchSubmitted) {
 } else {
  animateCollapseToZero();
 }
- };
+ setScrollControllerPointerEvents('auto')
+};
 
  const handleSubmit = () => {
-if (searchValue.trim().length > 0) {
+ if(isWebViewActive) {
+ setIsFocused(false);
+ onSearchBlur();
+ animateCollapseTo65();
+ }
+ setScrollControllerPointerEvents('auto')
+ setSearchValue(searchValue)
+ if (searchValue.trim().length > 0) {
  onSearchSubmit(searchValue.trim());
+ }
+ if (searchValue == '' && isWebViewActive) {
  setTimeout(() => {
-inputRef.current?.blur();
-setIsFocused(false);
-animateCollapseTo65();
+  animateCollapseTo65();
+ }, 0);
+ setSearchValue(shortUrl)
+ }
+
+ if (searchValue == '' && isStartPageActive) {
+ setTimeout(() => {
+  animateCollapseToZero();
+ }, 700);
+ }
+
+ if (typeof window !== 'undefined' && (window as any).browserViewSearch && isWebViewActive) {
+ (window as any).browserViewSearch.triggerSearch(searchValue);
+ } else {
+ setSearchValue(searchValue);
+  setTimeout(() => {
+ inputRef.current?.blur();
+ setIsFocused(false);
+ animateCollapseTo65();
  }, 200);
-}
- };
+ }
+};
+
+ const handleQuery = () => {
+ setIsFocused(false);
+ onSearchBlur();
+ animateCollapseTo65();
+ 
+ setScrollControllerPointerEvents('auto')
+ setSearchValue(searchValue)
+ if (searchValue.trim().length > 0) {
+ onSearchSubmit(searchValue.trim());
+ }
+
+ if (typeof window !== 'undefined' && (window as any).browserViewSearch) {
+ (window as any).browserViewSearch.triggerSearch(searchValue);
+ } else {
+ setTimeout(() => {
+ inputRef.current?.blur();
+ setIsFocused(false);
+ animateCollapseTo65();
+ }, 200);
+ }
+};
 
  const handleRefresh = () => {
+ setScrollControllerPointerEvents('auto')
 if (typeof window !== 'undefined' && window.browserNavigation?.refresh) {
  window.browserNavigation.refresh();
 } else if (onRefresh) {
  onRefresh();
+ 
 }
- };
+};
 
  const handleGoBack = () => {
 if (typeof window !== 'undefined' && window.browserNavigation?.goBack) {
@@ -779,7 +877,7 @@ const panBottomLayerOpacity = useRef(new Animated.Value(1)).current;
 const panBottomRespondOpacity = useRef(new Animated.Value(0)).current;
 const panBottomRespondZIndex = useRef(new Animated.Value(-9)).current;
 const [bluryRadius, setBluryRadius] = useState(40);
-const [bluryIntensity, setBluryIntensity] = useState(8);
+const [bluryIntensity, setBluryIntensity] = useState(7);
 const [bluryParentRadius, setBluryParentRadius] = useState(40);
 const [bluryBottom, setBluryBottom] = useState(19);
 const [bluryScaleX, setBluryScaleX] = useState(0.9);
@@ -808,7 +906,7 @@ if (typeof window !== 'undefined' && (window as any).globalGradientSync) {
 
 Animated.parallel([
 Animated.timing(panY, {
-toValue: 87,
+toValue: 105,
 duration: 600,
 easing: Easing.bezier(0.16, 1, 0.29, 0.99),
 useNativeDriver: true,
@@ -1041,7 +1139,7 @@ useNativeDriver: false,
 }),
 Animated.timing(scaleAnim, {
 toValue: 0.95,
-duration: 900,
+duration: 1000,
 easing: Easing.bezier(0.16, 1, 0.29, 0.99),
 useNativeDriver: false,
 }),
@@ -1130,6 +1228,124 @@ if (typeof window !== 'undefined') {
 setScrollControllerPointerEvents('auto');
 };
 
+const animateReadingListShow = () => {
+setIsReadingListVisible(true);
+setReadinListZIndex(9);
+setGradientHeight(550);
+setBluryHeight('95%')
+setBluryScaleX(0.95);
+setBluryBottom(20);
+setBluryIntensity(15)
+
+if (typeof window !== 'undefined') {
+(window as any).globalGradientHeight = 550;
+}
+
+Animated.parallel([
+Animated.timing(searcherHeight, {
+toValue: 410,
+duration: 900,
+easing,
+useNativeDriver: false,
+}),
+Animated.timing(bottomBarBorderAnim, {
+toValue: 1,
+duration: 900,
+easing,
+useNativeDriver: false,
+}),
+Animated.timing(scaleAnim, {
+toValue: 0.95,
+duration: 1000,
+easing: Easing.bezier(0.16, 1, 0.29, 0.99),
+useNativeDriver: false,
+}),
+Animated.timing(bgColorAnim, {
+toValue: 0.95,
+duration: 900,
+easing,
+useNativeDriver: false,
+}),
+Animated.timing(panBottomLayerOpacity, {
+toValue: 0,
+duration: 900,
+easing,
+useNativeDriver: false,
+}),
+]).start();
+
+setTimeout(() => {
+Animated.parallel([
+Animated.timing(readinListOpacity, {
+toValue: 1,
+duration: 900,
+easing,
+useNativeDriver: true,
+}),
+]).start();
+}, 500);
+
+setScrollControllerPointerEvents('none');
+};
+
+const animateReadingListHide = () => {
+setIsReadingListVisible(false);
+setReadinListZIndex(-99);
+setBluryHeight('88%')
+setBluryScaleX(0.9);
+setBluryBottom(19);
+setBluryIntensity(8)
+Animated.parallel([
+Animated.timing(searcherHeight, {
+toValue: COLLAPSED_AFTER_SUBMIT_HEIGHT,
+duration: 600,
+easing,
+useNativeDriver: false,
+}),
+Animated.timing(readinListOpacity, {
+toValue: 0,
+duration: 900,
+easing,
+useNativeDriver: true,
+}),
+Animated.timing(bgColorAnim, {
+toValue: 1,
+duration: 900,
+easing,
+useNativeDriver: false,
+}),
+Animated.timing(bottomBarBorderAnim, {
+toValue: 0.25,
+duration: 900,
+easing,
+useNativeDriver: false,
+}),
+Animated.timing(scaleAnim, {
+toValue: 0.9,
+duration: 900,
+easing: Easing.bezier(0.16, 1, 0.29, 0.99),
+useNativeDriver: false,
+}),
+
+Animated.timing(panBottomLayerOpacity, {
+toValue: 1,
+duration: 900,
+easing,
+useNativeDriver: false,
+}),
+]).start(() => {
+setIsWebInfoVisible(false);
+setWebInfoZIndex(-9);
+setGradientHeight(195);
+setBluryHeight('88%');
+
+if (typeof window !== 'undefined') {
+(window as any).globalGradientHeight = 195;
+}
+});
+
+setScrollControllerPointerEvents('auto');
+};
 
 const [currentTitle, setCurrentTitle] = useState('Untitled');
 useEffect(() => {
@@ -1147,25 +1363,59 @@ return unsubscribe;
 }, [activeTabId]);
 
 useEffect(() => {
-  if (isStartPageActive) {
-   animateCollapseToZero();
-  }
+ if (isStartPageActive) {
+  animateCollapseToZero();
+ }
 }, [isStartPageActive]);
+
 useEffect(() => {
  if (isWebViewActive) {
  animateCollapseTo65();
  isSearchSubmitted = isSearchSubmitted;
  inputRef.current?.blur();
  onSearchBlur();
- setScrollControllerPointerEvents('auto')
+ setScrollControllerY(1000);
  }
 }, [isWebViewActive]);
+
+const [readingList, setReadingList] = useState<ReadingListItem[]>([]);
+const handleAddToReadingList = async () => {
+ if (currentUrl && currentTitle) {
+ try {
+ const favicon = `https://www.google.com/s2/favicons?domain=${new URL(currentUrl).hostname}`;
+ 
+ if (onAddToReadingList) {
+ onAddToReadingList(currentUrl, currentTitle, favicon);
+ } else {
+ await ReadingListManager.addToReadingList({
+ title: currentTitle,
+ url: currentUrl,
+ favicon: favicon,
+ });
+ }
+ console.log('Added to reading list successfully');
+ } catch (error) {
+ console.error('Failed to add to reading list:', error);
+ }
+ }
+};
+
+useEffect(() => {
+ const loadReadingList = async () => {
+ const list = await ReadingListManager.getReadingList();
+ setReadingList(list);
+ };
+
+ if (isReadingListVisible) {
+ loadReadingList();
+ }
+}, [isReadingListVisible]);
  return (
 <View style={localStyles.absoluteContainer} pointerEvents="box-none">
 <Animated.View
 pointerEvents={isFocused ? 'auto' : 'none'}
 style={[localStyles.darkOverlay, { opacity: darkOverlayOpacity }]}>
-<TouchableWithoutFeedback onPress={handleCancel}>
+<TouchableWithoutFeedback onPress={()=>{handleCancel}}>
  <View style={{ flex: 1 }} />
 </TouchableWithoutFeedback>
  </Animated.View>
@@ -1270,7 +1520,8 @@ setScrollControllerY(700);
 )}
 
 {isWebViewActive && (
-<Pad py={2} direction="row" align="center" justify="center" style={{width:"90%"}} gap={55}>
+<Pad direction="row" align="center" justify="center" gap={10}>
+<Pad py={2} px={20} direction="row" align="center" justify="center" style={styles.bottomActionsHolder} gap={60}>
 <TouchableOpacity 
 style={[styles.justify,{zIndex:999}]}
 onPress={handleGoBack}
@@ -1291,16 +1542,16 @@ height={21}
 opacity={canGoForward ? .7 : 0.3}/>
 </TouchableOpacity>
 
-<Pressable style={styles.justify} onPress={animateWebInfoShow}>
+<Pressable style={styles.justify} onPress={animateReadingListShow}>
 <BookIcon width={30} height={30} opacity={.7} strokeWidth={1.65} />
 </Pressable>
 
-<Pressable style={styles.justify} onPress={() => inputRef.current?.focus()}>
+<Pressable style={styles.justify}>
 <ShareIcon width={28} height={28} opacity={.7} strokeWidth={1.6} />
 </Pressable>
-
+</Pad>
 <TouchableOpacity style={styles.justify} onPress={animateWebInfoShow}>
-<TouchableOpacity style={styles.PullButton} onPress={animateWebInfoShow}>
+<TouchableOpacity style={styles.PulledButton} onPress={animateWebInfoShow}>
 <ArrowUpIcon width={15} height={15} opacity={0.8} style={styles.absolute} />
 </TouchableOpacity>
 </TouchableOpacity>
@@ -1369,7 +1620,15 @@ zIndex: webInfoZIndex,
 </Pad>
 </Pad>
 </TouchableOpacity>
-<TouchableOpacity style={styles.ViewPad}>
+<TouchableOpacity style={styles.ViewPad} onPress={()=>{
+animateWebInfoHide();
+setTimeout(() => {
+animateReadingListShow()
+}, 1000);
+setTimeout(() => {
+handleAddToReadingList();
+}, 2500);
+}}>
 <Pad px={14} direction='column' align='flex-start' style={{width:'100%'}}>
 <Pad direction='row' justify='center' align='center' gap={0}>
 <Pressable style={styles.descButton}>
@@ -1398,8 +1657,110 @@ zIndex: webInfoZIndex,
 </Pad>
 <Break py={2}/>
 </TouchableOpacity>
-<Break py={5}/>
+<Break py={6}/>
 <TouchableOpacity style={[styles.wInfoButton,{backgroundColor:Themes.darkLight}]} onPress={animateWebInfoHide}>
+<Pad direction='row' justify='center'>
+<Text style={{fontFamily:'Font-Regular',color:'#000000',fontSize:16}}>Done</Text>
+</Pad>
+</TouchableOpacity>
+</Pad>
+</Animated.View>
+
+<Animated.View style={[
+localStyles.bottomWebInfo,
+{
+opacity: readinListOpacity,
+zIndex: readinListZIndex,
+}
+]}>
+<Pad px={3} py={10} direction='column' align='center' justify='flex-start' style={{width:'100%',height:'100%'}}>
+<View style={{width: '100%'}}>
+ <Pad px={14} direction='column' align='flex-start' style={{width:'100%'}}>
+ <View style={styles.center}>
+ <TextBold size={17} color='#000000'>Reading List</TextBold>
+ </View>
+ <Break py={5}/>
+ {readingList.length === 0 ? (
+ <View style={localStyles.readingListViewer}>
+ <View style={[styles.center,{height:'100%'}]}>
+ <TextMed size={14} color='#00000070'>No saved articles yet</TextMed>
+ </View>
+ </View>
+ ) : (
+ <ScrollView showsVerticalScrollIndicator={false} style={localStyles.readingListViewer}>
+ <View style={localStyles.readingListItemCover}>
+ {readingList.map((item) => (
+ <TouchableOpacity 
+ activeOpacity={.5}
+ key={item.id} 
+ style={localStyles.readingListItem}
+ onPress={() => {
+ if (typeof window !== 'undefined' && (window as any).browserViewSearch) {
+ (window as any).browserViewSearch.triggerSearch(item.url);
+ setSearchValue(shortUrl)
+ } else {
+ setSearchValue(item.url);
+ setTimeout(() => {
+ handleSubmit();
+ }, 100);
+ }
+ animateReadingListHide();
+ }}>
+ <View style={localStyles.readingItemContent}>
+ <Pad direction='row' gap={10} style={styles.wFull} justify='center'>
+ <View style={[styles.alignStart,styles.justify,{position:'absolute',paddingLeft:10,width:'100%'}]}>
+ {item.favicon && (
+ <Image 
+ source={{ uri: item.favicon }} 
+ style={localStyles.readingItemFavicon}
+ defaultSource={require('../../assets/favicon.png')}
+ />
+ )}
+ </View>
+ <View style={[styles.wFull,{paddingLeft:65}]}>
+ <Pad direction='column' align='flex-start'>
+ <TextBold size={14} color='#000000'>{item.title}</TextBold>
+ <TextMed size={12} color='#00000080'>
+ {new URL(item.url).hostname} • {new Date(item.dateAdded).toLocaleDateString()}
+ </TextMed>
+
+ </Pad>
+ </View>
+ </Pad>
+ {/* {item.favicon && (
+ <Image 
+ source={{ uri: item.favicon }} 
+ style={localStyles.readingItemFavicon}
+ defaultSource={require('../../assets/images/favico.png')}
+ />
+ )}
+ <View style={localStyles.readingItemText}>
+ <TextBold size={14} color='#000000'>{item.title}</TextBold>
+ <TextMed size={12} color='#00000080'>
+ {new URL(item.url).hostname} • {new Date(item.dateAdded).toLocaleDateString()}
+ </TextMed>
+ </View>
+ <TouchableOpacity 
+ style={localStyles.removeButton}
+ onPress={async (e) => {
+ e.stopPropagation();
+ await ReadingListManager.removeFromReadingList(item.id);
+ const updatedList = await ReadingListManager.getReadingList();
+ setReadingList(updatedList);
+ }}>
+ <CrossIcon width={12} height={12} opacity={0.6} />
+ </TouchableOpacity> */}
+ </View>
+ </TouchableOpacity>
+ ))}
+ </View>
+ </ScrollView>
+ )}
+ </Pad>
+</View>
+
+<Break py={6}/>
+<TouchableOpacity style={[styles.wInfoButton,{backgroundColor:Themes.darkLight}]} onPress={animateReadingListHide}>
 <Pad direction='row' justify='center'>
 <Text style={{fontFamily:'Font-Regular',color:'#000000',fontSize:16}}>Done</Text>
 </Pad>
@@ -1409,6 +1770,7 @@ zIndex: webInfoZIndex,
 </Animated.View>
 
 {isWebViewActive && (
+<>
 <Blury
 parentRadius={bluryParentRadius}
 radius={bluryRadius}
@@ -1418,13 +1780,18 @@ zindex={-9}
 height={bluryHeight}
 scaleX={bluryScaleX}
 />
+</>
 )}
-</Animated.View>
-{isWebViewActive && (<View 
+
+{isWebViewActive && (
+<>
+<View 
 {...panResponder.panHandlers} 
 style={[localStyles.scrollController, {transform:[{translateY:scrollControllerY}]}]} 
-pointerEvents={scrollControllerPointerEvents}
-/>)}
+pointerEvents={scrollControllerPointerEvents} />
+</>
+)}
+</Animated.View>
 </View>
  );
 };
@@ -1455,7 +1822,7 @@ bottom: 0,
 left: 0,
 width: '100%',
 height: 750,
-zIndex: -9,
+zIndex: -99,
  },
  bottomRespond: {
 width: '100%',
@@ -1463,8 +1830,16 @@ height: '100%',
 display: 'flex',
 alignItems:'center',
 position:'absolute',
+},
+bottomWebInfo: {
+width: '100%',
+height: '100%',
+display: 'flex',
+alignItems:'center',
+justifyContent: 'center',
+position:'absolute',
  },
- bottomWebInfo: {
+ readinfListView: {
 width: '100%',
 height: '100%',
 display: 'flex',
@@ -1480,7 +1855,8 @@ display: 'flex',
 alignItems:'center',
 justifyContent: 'center',
 borderColor: "#ffffffd5",
-backgroundColor: "#ffffffb5"
+backgroundColor: "#ffffffb5",
+pointerEvents: 'none'
  },
  gradient: {
 width: '100%',
@@ -1489,5 +1865,40 @@ bottom: 0,
 opacity: .7,
 zIndex: 999999,
 position: 'absolute'
- }
+ },
+readingListViewer: {
+  width: '100%',
+  maxHeight: 353,
+  borderRadius: 20,
+},
+readingListItemCover: {
+  width: '100%',
+  borderRadius: 22,
+  overflow: 'hidden'
+},
+readingListItem: {
+  width: '100%',
+  paddingVertical: 12,
+  paddingHorizontal: 8,
+  borderBottomWidth: 1,
+  borderColor: '#00000010',
+  backgroundColor: '#ffffff',
+},
+readingItemContent: {
+  width: '100%',
+  alignItems: 'center',
+},
+readingItemFavicon: {
+  width: 40,
+  height: 40,
+  borderRadius: 4,
+},
+readingItemText: {
+  textTransform: 'capitalize'
+},
+removeButton: {
+  padding: 8,
+  borderRadius: 16,
+  backgroundColor: '#ffffff80',
+},
 });

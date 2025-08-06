@@ -1,4 +1,4 @@
-import { ImageBackground, ImageSourcePropType } from "react-native"
+import { Image, ImageBackground, ImageSourcePropType } from "react-native"
 import { styles } from "../styles/computed/styles"
 
 interface LayerShadowProps {
@@ -7,6 +7,6 @@ interface LayerShadowProps {
 
 export const LayerShadow: React.FC<LayerShadowProps> = ({ fill }) => {
   return (
-  <ImageBackground source={fill} resizeMode="cover" style={styles.sizeFull}/>
+  <Image source={fill} resizeMode="cover" style={styles.sizeFull}/>
   )
 }
